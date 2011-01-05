@@ -10,7 +10,7 @@ OAUTHTOKEN=""
 OAUTHTOKENSECRET=""
 
 #Debug
-f = File.open("/tmp/twitter.log","w")
+file = File.open("/tmp/twitter.log","w")
 
 #Listagem de usuários que o programa vai acompanhar
 users = ["emanuelestrada", "dianaada", "dmtcllr", "edergoncalves","werhli","jtyska","vinicius_ah"]
@@ -30,7 +30,12 @@ def search_and_retwitt(user,pattern,connection,file)
   if status.text =~ pattern
 #Debug
     file.puts "Retweet: yes"
-    connection.retweet(status.id)
+    begin
+      connection.retweet(status.id)
+    rescue Twitter::Forbidden
+      file.puts "Twitter:Forbidden"
+    end
+
   end
   
 end
@@ -48,8 +53,8 @@ connection = Twitter::Client.new
 
 #Percorre a listagem de usuários
 users.each do |user|
-  search_and_retwitt(user,pattern,connection,f)
+  search_and_retwitt(user,pattern,connection,file)
 end
 
 #Debug
-f.close
+file.close
